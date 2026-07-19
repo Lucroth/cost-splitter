@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -15,10 +15,10 @@
   <div id="setup-view" class="view hidden">
     <div class="login-box">
       <div class="login-logo">🛠️</div>
-      <h1>Almost there</h1>
-      <p class="muted">Firebase isn't configured yet.<br>
-      Follow <b>SETUP.md</b> in the repo, paste your config into
-      <b>firebase-config.js</b> and push.</p>
+      <h1>Prawie gotowe</h1>
+      <p class="muted">Firebase nie jest jeszcze skonfigurowany.<br>
+      Wykonaj kroki z <b>SETUP.md</b>, wklej konfigurację do
+      <b>firebase-config.js</b> i wypchnij zmiany.</p>
     </div>
   </div>
 
@@ -27,13 +27,13 @@
     <div class="login-box">
       <div class="login-logo">💜</div>
       <h1>Marta &amp; Rafał</h1>
-      <p class="muted">Who are you?</p>
+      <p class="muted">Kim jesteś?</p>
       <div class="user-pick">
         <button class="user-btn" data-user="Marta">Marta</button>
         <button class="user-btn" data-user="Rafał">Rafał</button>
       </div>
-      <input id="pin-input" type="password" placeholder="Password" autocomplete="current-password">
-      <button id="login-btn" class="primary">Log in</button>
+      <input id="pin-input" type="password" placeholder="Hasło" autocomplete="current-password">
+      <button id="login-btn" class="primary">Zaloguj się</button>
       <p id="login-error" class="error hidden"></p>
     </div>
   </div>
@@ -42,65 +42,65 @@
   <div id="main-view" class="view hidden">
     <header>
       <span id="hello"></span>
-      <button id="logout-btn" class="ghost">Log out</button>
+      <button id="logout-btn" class="ghost">Wyloguj</button>
     </header>
 
     <div id="balance-banner"></div>
 
     <nav class="tabs">
-      <button class="tab active" data-tab="add">➕ Add</button>
-      <button class="tab" data-tab="history">📜 History</button>
+      <button class="tab active" data-tab="add">➕ Dodaj</button>
+      <button class="tab" data-tab="history">📜 Historia</button>
     </nav>
 
     <section id="tab-add" class="tab-panel">
       <form id="expense-form">
-        <button type="button" id="scan-btn" class="scan">📷 Scan receipt</button>
+        <button type="button" id="scan-btn" class="scan">📷 Skanuj paragon</button>
         <input id="scan-file" type="file" accept="image/*" capture="environment" class="hidden">
         <p id="scan-status" class="muted small-text hidden"></p>
 
-        <input id="f-desc" type="text" placeholder="What was it? (e.g. Biedronka)" maxlength="200" required>
+        <input id="f-desc" type="text" placeholder="Co to było? (np. Biedronka)" maxlength="200" required>
         <div class="row">
-          <input id="f-amount" type="text" inputmode="decimal" placeholder="0.00" required>
+          <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00" required>
           <select id="f-currency">
             <option>PLN</option><option>EUR</option><option>USD</option>
             <option>GBP</option><option>CZK</option><option>HUF</option>
           </select>
         </div>
-        <label class="field-label">Paid by</label>
+        <label class="field-label">Kto płacił</label>
         <div class="row toggle-row" id="f-paidby">
           <button type="button" class="toggle" data-val="Marta">Marta</button>
           <button type="button" class="toggle" data-val="Rafał">Rafał</button>
         </div>
-        <label class="field-label">Category</label>
+        <label class="field-label">Kategoria</label>
         <div class="chips" id="f-category">
-          <button type="button" class="chip active" data-val="Groceries">🛒 Groceries</button>
-          <button type="button" class="chip" data-val="Food">🍕 Food</button>
-          <button type="button" class="chip" data-val="Travel">✈️ Travel</button>
+          <button type="button" class="chip active" data-val="Groceries">🛒 Zakupy</button>
+          <button type="button" class="chip" data-val="Food">🍕 Jedzenie</button>
+          <button type="button" class="chip" data-val="Travel">✈️ Podróże</button>
           <button type="button" class="chip" data-val="Transport">🚌 Transport</button>
-          <button type="button" class="chip" data-val="Home">🏠 Home</button>
-          <button type="button" class="chip" data-val="Fun">🎉 Fun</button>
-          <button type="button" class="chip" data-val="Other">📦 Other</button>
+          <button type="button" class="chip" data-val="Home">🏠 Dom</button>
+          <button type="button" class="chip" data-val="Fun">🎉 Rozrywka</button>
+          <button type="button" class="chip" data-val="Other">📦 Inne</button>
         </div>
-        <label class="field-label">Split</label>
+        <label class="field-label">Podział</label>
         <div class="row toggle-row" id="f-split">
           <button type="button" class="toggle active" data-val="half">50 / 50</button>
-          <button type="button" class="toggle" data-val="full">All on the other</button>
-          <button type="button" class="toggle" data-val="custom">Custom</button>
+          <button type="button" class="toggle" data-val="full">Wszystko na drugą osobę</button>
+          <button type="button" class="toggle" data-val="custom">Własny</button>
         </div>
         <div id="custom-split" class="row hidden">
           <div class="share-field">
-            <label>Marta's share</label>
-            <input id="f-share-marta" type="text" inputmode="decimal" placeholder="0.00">
+            <label>Część Marty</label>
+            <input id="f-share-marta" type="text" inputmode="decimal" placeholder="0,00">
           </div>
           <div class="share-field">
-            <label>Rafał's share</label>
-            <input id="f-share-rafal" type="text" inputmode="decimal" placeholder="0.00">
+            <label>Część Rafała</label>
+            <input id="f-share-rafal" type="text" inputmode="decimal" placeholder="0,00">
           </div>
         </div>
         <div class="row">
           <input id="f-date" type="date">
         </div>
-        <button type="submit" class="primary">Add expense</button>
+        <button type="submit" class="primary">Dodaj wydatek</button>
         <p id="form-error" class="error hidden"></p>
       </form>
     </section>

@@ -6,6 +6,10 @@ const CAT_ICONS = {
   Groceries: '🛒', Food: '🍕', Travel: '✈️', Transport: '🚌',
   Home: '🏠', Fun: '🎉', Other: '📦'
 };
+// Polish grammar helpers: dative (komu oddać), accusative (na kogo), past-tense verb by gender
+const DATIVE = { 'Rafał': 'Rafałowi', 'Marta': 'Marcie' };
+const ACCUSATIVE = { 'Rafał': 'Rafała', 'Marta': 'Martę' };
+const PAID_VERB = { 'Rafał': 'Płacił', 'Marta': 'Płaciła' };
 
 // ---------- setup check ----------
 if (firebaseConfig.apiKey === 'PASTE_ME') {
@@ -65,7 +69,7 @@ function showLogin() {
 function showMain() {
   $('#login-view').classList.add('hidden');
   $('#main-view').classList.remove('hidden');
-  $('#hello').textContent = `Hi, ${me} 👋`;
+  $('#hello').textContent = `Cześć, ${me} 👋`;
 }
 
 // ---------- auth ----------
@@ -84,7 +88,7 @@ async function doLogin() {
   const err = $('#login-error');
   err.classList.add('hidden');
   if (!selectedLoginUser) {
-    err.textContent = 'Pick who you are first';
+    err.textContent = 'Najpierw wybierz, kim jesteś';
     err.classList.remove('hidden');
     return;
   }
@@ -92,7 +96,7 @@ async function doLogin() {
     await signInWithEmailAndPassword(auth, USER_EMAILS[selectedLoginUser], $('#pin-input').value);
     $('#pin-input').value = '';
   } catch (e) {
-    err.textContent = 'Wrong password';
+    err.textContent = 'Złe hasło';
     err.classList.remove('hidden');
   }
 }
@@ -164,29 +168,29 @@ $('#scan-file').addEventListener('change', async (e) => {
   status.classList.remove('hidden');
   try {
     if (!window.Tesseract) {
-      status.textContent = 'Loading OCR engine… (first time downloads the Polish language pack)';
+      status.textContent = 'Ładowanie silnika OCR… (za pierwszym razem pobiera pakiet języka polskiego)';
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
         s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
         s.onload = resolve;
-        s.onerror = () => reject(new Error('could not load OCR engine'));
+        s.onerror = () => reject(new Error('nie udało się załadować silnika OCR'));
         document.head.appendChild(s);
       });
     }
-    status.textContent = 'Reading receipt… 🔍';
+    status.textContent = 'Czytam paragon… 🔍';
     const worker = await Tesseract.createWorker('pol');
     const { data } = await worker.recognize(file);
     await worker.terminate();
     const total = parseReceiptTotal(data.text);
     if (total) {
       $('#f-amount').value = fmt(total);
-      if (!$('#f-desc').value) $('#f-desc').value = guessStore(data.text) || 'Groceries';
-      status.textContent = `Found total: ${fmt(total)} — check it's right ✅`;
+      if (!$('#f-desc').value) $('#f-desc').value = guessStore(data.text) || 'Zakupy';
+      status.textContent = `Znaleziona suma: ${fmt(total)} — sprawdź, czy się zgadza ✅`;
     } else {
-      status.textContent = 'Could not find a total on this receipt — enter it manually';
+      status.textContent = 'Nie udało się znaleźć sumy na paragonie — wpisz ręcznie';
     }
   } catch (err) {
-    status.textContent = 'Scan failed: ' + err.message;
+    status.textContent = 'Skanowanie nie powiodło się: ' + err.message;
   } finally {
     btn.disabled = false;
     e.target.value = '';
@@ -234,8 +238,8 @@ $('#expense-form').addEventListener('submit', async (e) => {
   const paidBy = getToggleValue('#f-paidby');
   const split = getToggleValue('#f-split');
 
-  if (!Number.isFinite(amount) || amount <= 0) return showFormError('Enter a valid amount');
-  if (!paidBy) return showFormError('Pick who paid');
+  if (!Number.isFinite(amount) || amount <= 0) return showFormError('Podaj poprawną kwotę');
+  if (!paidBy) return showFormError('Wybierz, kto płacił');
 
   let shares;
   if (split === 'half') {
@@ -246,9 +250,9 @@ $('#expense-form').addEventListener('submit', async (e) => {
   } else {
     const m = parseAmount($('#f-share-marta').value || '0');
     const r = parseAmount($('#f-share-rafal').value || '0');
-    if (!Number.isFinite(m) || !Number.isFinite(r)) return showFormError('Enter valid shares');
+    if (!Number.isFinite(m) || !Number.isFinite(r)) return showFormError('Podaj poprawne części');
     shares = { 'Marta': m, 'Rafał': r };
-    if (Math.abs(m + r - amount) > 0.01) return showFormError('Shares must add up to the amount');
+    if (Math.abs(m + r - amount) > 0.01) return showFormError('Części muszą sumować się do kwoty');
   }
 
   try {
@@ -313,7 +317,7 @@ function renderBalance(balances) {
   const el = $('#balance-banner');
   const currencies = Object.keys(balances);
   if (currencies.length === 0) {
-    el.innerHTML = '<div class="balance-zero">✅ All settled up!</div>';
+    el.innerHTML = '<div class="balance-zero">✅ Wszystko rozliczone!</div>';
     return;
   }
   el.innerHTML = currencies.map(cur => {
@@ -322,14 +326,14 @@ function renderBalance(balances) {
     const creditor = otherUser(debtor);
     const amt = Math.abs(rafal);
     return `<div class="balance-line">
-      <span class="balance-text"><b>${debtor}</b> owes <b>${creditor}</b> ${fmt(amt)} ${cur}</span>
-      <button class="small" data-settle='${JSON.stringify({ from: debtor, to: creditor, amount: amt, currency: cur })}'>Settle up</button>
+      <span class="balance-text"><b>${debtor}</b> ma oddać <b>${DATIVE[creditor]}</b> ${fmt(amt)} ${cur}</span>
+      <button class="small" data-settle='${JSON.stringify({ from: debtor, to: creditor, amount: amt, currency: cur })}'>Rozlicz</button>
     </div>`;
   }).join('');
   el.querySelectorAll('[data-settle]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const s = JSON.parse(btn.dataset.settle);
-      if (!confirm(`Mark ${fmt(s.amount)} ${s.currency} from ${s.from} to ${s.to} as paid back?`)) return;
+      if (!confirm(`Oznaczyć zwrot ${fmt(s.amount)} ${s.currency} (${s.from} → ${s.to}) jako oddany?`)) return;
       const { serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
       await addDoc(collection(db, 'settlements'), {
         ...s,
@@ -350,7 +354,7 @@ function renderHistory() {
   );
 
   if (items.length === 0) {
-    el.innerHTML = '<div class="empty">No expenses yet.<br>Add your first one! 🛒</div>';
+    el.innerHTML = '<div class="empty">Brak wydatków.<br>Dodaj pierwszy! 🛒</div>';
     return;
   }
 
@@ -366,7 +370,7 @@ function renderHistory() {
         <span class="entry-icon">${CAT_ICONS[item.category] || '📦'}</span>
         <div class="entry-main">
           <div class="entry-desc">${escapeHtml(item.desc)}</div>
-          <div class="entry-sub">${item.paidBy} paid · ${describeSplit(item)}</div>
+          <div class="entry-sub">${PAID_VERB[item.paidBy]} ${item.paidBy} · ${describeSplit(item)}</div>
         </div>
         <span class="entry-amount">${fmt(item.amount)} ${item.currency}</span>
         <button class="entry-del" data-del="expenses/${item.id}" title="Delete">🗑️</button>
@@ -375,7 +379,7 @@ function renderHistory() {
       html += `<div class="entry">
         <span class="entry-icon">🤝</span>
         <div class="entry-main">
-          <div class="entry-desc">Settled up</div>
+          <div class="entry-desc">Rozliczenie</div>
           <div class="entry-sub">${item.from} → ${item.to}</div>
         </div>
         <span class="entry-amount settle">${fmt(item.amount)} ${item.currency}</span>
@@ -387,7 +391,7 @@ function renderHistory() {
 
   el.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this entry?')) return;
+      if (!confirm('Usunąć ten wpis?')) return;
       const [col, id] = btn.dataset.del.split('/');
       await deleteDoc(doc(db, col, id));
     });
@@ -396,18 +400,18 @@ function renderHistory() {
 
 function describeSplit(e) {
   const m = e.shares['Marta'], r = e.shares['Rafał'];
-  if (Math.abs(m - r) <= 0.01) return 'split 50/50';
-  if (m === 0) return 'all on Rafał';
-  if (r === 0) return 'all on Marta';
+  if (Math.abs(m - r) <= 0.01) return 'podział 50/50';
+  if (m === 0) return `wszystko na ${ACCUSATIVE['Rafał']}`;
+  if (r === 0) return `wszystko na ${ACCUSATIVE['Marta']}`;
   return `Marta ${fmt(m)} / Rafał ${fmt(r)}`;
 }
 
 function formatDate(iso) {
   const today = new Date().toISOString().slice(0, 10);
   const yesterday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
-  if (iso === today) return 'Today';
-  if (iso === yesterday) return 'Yesterday';
-  return new Date(iso + 'T00:00:00').toLocaleDateString(undefined, {
+  if (iso === today) return 'Dzisiaj';
+  if (iso === yesterday) return 'Wczoraj';
+  return new Date(iso + 'T00:00:00').toLocaleDateString('pl-PL', {
     weekday: 'short', day: 'numeric', month: 'short'
   });
 }
