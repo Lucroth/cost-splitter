@@ -54,14 +54,13 @@
 
     <section id="tab-add" class="tab-panel hidden">
       <form id="expense-form">
-        <button type="button" id="scan-btn" class="scan">📷 Skanuj paragon</button>
-        <input id="scan-file" type="file" accept="image/*" capture="environment" class="hidden">
-        <p id="scan-status" class="muted small-text hidden"></p>
-
         <input id="f-desc" type="text" placeholder="Co to było? (np. Biedronka)" maxlength="200" required>
         <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00 zł" required>
         <input id="f-date" type="date">
         <button type="submit" class="primary">Dodaj wydatek</button>
+        <button type="button" id="scan-btn" class="scan">📷 Skanuj paragon</button>
+        <input id="scan-file" type="file" accept="image/*" capture="environment" class="hidden">
+        <p id="scan-status" class="muted small-text hidden"></p>
         <p id="form-error" class="error hidden"></p>
       </form>
     </section>
