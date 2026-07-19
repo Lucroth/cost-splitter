@@ -188,7 +188,7 @@ button.scan:disabled { opacity: 0.6; }
 }
 .entry {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   background: var(--card);
   border-radius: var(--radius);
@@ -197,7 +197,7 @@ button.scan:disabled { opacity: 0.6; }
 }
 .entry-icon { font-size: 1.4rem; }
 .entry-main { flex: 1; min-width: 0; }
-.entry-desc { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.entry-desc { font-weight: 600; overflow-wrap: anywhere; }
 .entry-sub { font-size: 0.8rem; color: var(--muted); }
 .entry-amount { font-weight: 700; white-space: nowrap; }
 .entry-amount.settle { color: var(--green); }
