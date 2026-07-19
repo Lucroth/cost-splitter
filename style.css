@@ -188,7 +188,7 @@ button.scan:disabled { opacity: 0.6; }
 }
 .entry {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   background: var(--card);
   border-radius: var(--radius);

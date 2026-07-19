@@ -2,10 +2,6 @@ import { firebaseConfig, USER_EMAILS } from './firebase-config.js';
 
 const $ = (sel) => document.querySelector(sel);
 const USERS = ['Rafał', 'Marta'];
-const CAT_ICONS = {
-  Groceries: '🛒', Food: '🍕', Travel: '✈️', Transport: '🚌',
-  Home: '🏠', Fun: '🎉', Other: '📦'
-};
 // Polish grammar helpers: accusative (na kogo), past-tense verb by gender
 const ACCUSATIVE = { 'Rafał': 'Rafała', 'Marta': 'Martę' };
 const PAID_VERB = { 'Rafał': 'Płacił', 'Marta': 'Płaciła' };
@@ -324,7 +320,6 @@ function renderHistory() {
     }
     if (item.kind === 'expense') {
       html += `<div class="entry">
-        <span class="entry-icon">${CAT_ICONS[item.category] || '📦'}</span>
         <div class="entry-main">
           <div class="entry-desc">${escapeHtml(item.desc)}</div>
           <div class="entry-sub">${PAID_VERB[item.paidBy]} ${item.paidBy}${splitSuffix(item)}</div>

@@ -1,4 +1,4 @@
-const CACHE = 'split-app-v9';
+const CACHE = 'split-app-v10';
 const ASSETS = ['./', './index.html', './style.css', './app.js', './firebase-config.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (e) => {
