@@ -48,11 +48,11 @@
     <div id="balance-banner"></div>
 
     <nav class="tabs">
-      <button class="tab active" data-tab="add">➕ Dodaj</button>
-      <button class="tab" data-tab="history">📜 Historia</button>
+      <button class="tab" data-tab="add">➕ Dodaj</button>
+      <button class="tab active" data-tab="history">📜 Historia</button>
     </nav>
 
-    <section id="tab-add" class="tab-panel">
+    <section id="tab-add" class="tab-panel hidden">
       <form id="expense-form">
         <button type="button" id="scan-btn" class="scan">📷 Skanuj paragon</button>
         <input id="scan-file" type="file" accept="image/*" capture="environment" class="hidden">
@@ -66,7 +66,7 @@
       </form>
     </section>
 
-    <section id="tab-history" class="tab-panel hidden">
+    <section id="tab-history" class="tab-panel">
       <div id="history-list"></div>
     </section>
   </div>
