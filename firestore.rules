@@ -5,7 +5,7 @@ service cloud.firestore {
     // Replace with the same emails you set in firebase-config.js.
     function isCouple() {
       return request.auth != null &&
-        request.auth.token.email in ['rafal@example.com', 'marta@example.com'];
+        request.auth.token.email in ['lewandowskyyy@gmail.com', 'marta.mikolajczuk@o2.pl'];
     }
     match /expenses/{id} {
       allow read, write: if isCouple();

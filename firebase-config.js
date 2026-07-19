@@ -2,17 +2,17 @@
 //    The apiKey is safe to publish — it only identifies the project; security comes from
 //    Firestore rules + Auth.
 export const firebaseConfig = {
-  apiKey: "PASTE_ME",
-  authDomain: "PASTE_ME.firebaseapp.com",
-  projectId: "PASTE_ME",
-  storageBucket: "PASTE_ME.appspot.com",
-  messagingSenderId: "PASTE_ME",
-  appId: "PASTE_ME"
+  apiKey: "AIzaSyCWnoafIyzFzksdMv3a13-9ppdIfMD1-fU",
+  authDomain: "cost-splitter-2daf2.firebaseapp.com",
+  projectId: "cost-splitter-2daf2",
+  storageBucket: "cost-splitter-2daf2.firebasestorage.app",
+  messagingSenderId: "799800579105",
+  appId: "1:799800579105:web:756ca367fdd42a4345bf60"
 };
 
 // 2. The two allowed accounts (create them in Firebase console → Authentication → Users).
 //    Must match the emails in firestore.rules.
 export const USER_EMAILS = {
-  'Rafał': 'rafal@example.com',
-  'Marta': 'marta@example.com'
+  'Rafał': 'lewandowskyyy@gmail.com',
+  'Marta': 'marta.mikolajczuk@o2.pl'
 };
