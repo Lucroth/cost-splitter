@@ -59,47 +59,8 @@
         <p id="scan-status" class="muted small-text hidden"></p>
 
         <input id="f-desc" type="text" placeholder="Co to było? (np. Biedronka)" maxlength="200" required>
-        <div class="row">
-          <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00" required>
-          <select id="f-currency">
-            <option>PLN</option><option>EUR</option><option>USD</option>
-            <option>GBP</option><option>CZK</option><option>HUF</option>
-          </select>
-        </div>
-        <label class="field-label">Kto płacił</label>
-        <div class="row toggle-row" id="f-paidby">
-          <button type="button" class="toggle" data-val="Marta">Marta</button>
-          <button type="button" class="toggle" data-val="Rafał">Rafał</button>
-        </div>
-        <label class="field-label">Kategoria</label>
-        <div class="chips" id="f-category">
-          <button type="button" class="chip active" data-val="Groceries">🛒 Zakupy</button>
-          <button type="button" class="chip" data-val="Food">🍕 Jedzenie</button>
-          <button type="button" class="chip" data-val="Travel">✈️ Podróże</button>
-          <button type="button" class="chip" data-val="Transport">🚌 Transport</button>
-          <button type="button" class="chip" data-val="Home">🏠 Dom</button>
-          <button type="button" class="chip" data-val="Fun">🎉 Rozrywka</button>
-          <button type="button" class="chip" data-val="Other">📦 Inne</button>
-        </div>
-        <label class="field-label">Podział</label>
-        <div class="row toggle-row" id="f-split">
-          <button type="button" class="toggle active" data-val="half">50 / 50</button>
-          <button type="button" class="toggle" data-val="full">Wszystko na drugą osobę</button>
-          <button type="button" class="toggle" data-val="custom">Własny</button>
-        </div>
-        <div id="custom-split" class="row hidden">
-          <div class="share-field">
-            <label>Część Marty</label>
-            <input id="f-share-marta" type="text" inputmode="decimal" placeholder="0,00">
-          </div>
-          <div class="share-field">
-            <label>Część Rafała</label>
-            <input id="f-share-rafal" type="text" inputmode="decimal" placeholder="0,00">
-          </div>
-        </div>
-        <div class="row">
-          <input id="f-date" type="date">
-        </div>
+        <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00 zł" required>
+        <input id="f-date" type="date">
         <button type="submit" class="primary">Dodaj wydatek</button>
         <p id="form-error" class="error hidden"></p>
       </form>

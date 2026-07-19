@@ -55,6 +55,10 @@ function otherUser(u) {
   return u === 'Marta' ? 'Rafał' : 'Marta';
 }
 
+function curLabel(c) {
+  return c === 'PLN' ? 'zł' : c;
+}
+
 function createdMillis(item) {
   if (item.createdAt && typeof item.createdAt.toMillis === 'function') return item.createdAt.toMillis();
   return Date.now(); // pending server timestamp on fresh local writes
@@ -134,27 +138,7 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// ---------- form toggles ----------
-function setupToggleGroup(containerSel, onChange) {
-  const container = $(containerSel);
-  container.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      container.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
-      if (onChange) onChange(btn.dataset.val);
-    });
-  });
-}
 
-setupToggleGroup('#f-paidby');
-setupToggleGroup('#f-category');
-setupToggleGroup('#f-split', (val) => {
-  $('#custom-split').classList.toggle('hidden', val !== 'custom');
-});
-
-function getToggleValue(containerSel) {
-  const active = $(containerSel).querySelector('button.active');
-  return active ? active.dataset.val : null;
-}
 
 // ---------- receipt scanning ----------
 $('#scan-btn').addEventListener('click', () => $('#scan-file').click());
@@ -235,43 +219,29 @@ $('#expense-form').addEventListener('submit', async (e) => {
   err.classList.add('hidden');
 
   const amount = parseAmount($('#f-amount').value);
-  const paidBy = getToggleValue('#f-paidby');
-  const split = getToggleValue('#f-split');
 
   if (!Number.isFinite(amount) || amount <= 0) return showFormError('Podaj poprawną kwotę');
-  if (!paidBy) return showFormError('Wybierz, kto płacił');
 
-  let shares;
-  if (split === 'half') {
-    const half = Math.round(amount * 50) / 100;
-    shares = { [paidBy]: Math.round((amount - half) * 100) / 100, [otherUser(paidBy)]: half };
-  } else if (split === 'full') {
-    shares = { [paidBy]: 0, [otherUser(paidBy)]: amount };
-  } else {
-    const m = parseAmount($('#f-share-marta').value || '0');
-    const r = parseAmount($('#f-share-rafal').value || '0');
-    if (!Number.isFinite(m) || !Number.isFinite(r)) return showFormError('Podaj poprawne części');
-    shares = { 'Marta': m, 'Rafał': r };
-    if (Math.abs(m + r - amount) > 0.01) return showFormError('Części muszą sumować się do kwoty');
-  }
+  // payer = logged-in user, always split 50/50
+  const paidBy = me;
+  const half = Math.round(amount * 50) / 100;
+  const shares = { [paidBy]: Math.round((amount - half) * 100) / 100, [otherUser(paidBy)]: half };
 
   try {
     const { serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
     await addDoc(collection(db, 'expenses'), {
       desc: $('#f-desc').value.trim(),
       amount: Math.round(amount * 100) / 100,
-      currency: $('#f-currency').value,
+      currency: 'PLN',
       paidBy,
       shares,
-      category: getToggleValue('#f-category') || 'Other',
+      category: 'Other',
       date: $('#f-date').value || new Date().toISOString().slice(0, 10),
       addedBy: me,
       createdAt: serverTimestamp()
     });
     $('#f-desc').value = '';
     $('#f-amount').value = '';
-    $('#f-share-marta').value = '';
-    $('#f-share-rafal').value = '';
     $('#scan-status').classList.add('hidden');
     document.querySelector('.tab[data-tab="history"]').click();
   } catch (e2) {
@@ -326,14 +296,14 @@ function renderBalance(balances) {
     const creditor = otherUser(debtor);
     const amt = Math.abs(rafal);
     return `<div class="balance-line">
-      <span class="balance-text"><b>${debtor}</b> ma oddać <b>${DATIVE[creditor]}</b> ${fmt(amt)} ${cur}</span>
+      <span class="balance-text"><b>${debtor}</b> ma oddać <b>${DATIVE[creditor]}</b> ${fmt(amt)} ${curLabel(cur)}</span>
       <button class="small" data-settle='${JSON.stringify({ from: debtor, to: creditor, amount: amt, currency: cur })}'>Rozlicz</button>
     </div>`;
   }).join('');
   el.querySelectorAll('[data-settle]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const s = JSON.parse(btn.dataset.settle);
-      if (!confirm(`Oznaczyć zwrot ${fmt(s.amount)} ${s.currency} (${s.from} → ${s.to}) jako oddany?`)) return;
+      if (!confirm(`Oznaczyć zwrot ${fmt(s.amount)} ${curLabel(s.currency)} (${s.from} → ${s.to}) jako oddany?`)) return;
       const { serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
       await addDoc(collection(db, 'settlements'), {
         ...s,
@@ -370,9 +340,9 @@ function renderHistory() {
         <span class="entry-icon">${CAT_ICONS[item.category] || '📦'}</span>
         <div class="entry-main">
           <div class="entry-desc">${escapeHtml(item.desc)}</div>
-          <div class="entry-sub">${PAID_VERB[item.paidBy]} ${item.paidBy} · ${describeSplit(item)}</div>
+          <div class="entry-sub">${PAID_VERB[item.paidBy]} ${item.paidBy}${splitSuffix(item)}</div>
         </div>
-        <span class="entry-amount">${fmt(item.amount)} ${item.currency}</span>
+        <span class="entry-amount">${fmt(item.amount)} ${curLabel(item.currency)}</span>
         <button class="entry-del" data-del="expenses/${item.id}" title="Delete">🗑️</button>
       </div>`;
     } else {
@@ -382,7 +352,7 @@ function renderHistory() {
           <div class="entry-desc">Rozliczenie</div>
           <div class="entry-sub">${item.from} → ${item.to}</div>
         </div>
-        <span class="entry-amount settle">${fmt(item.amount)} ${item.currency}</span>
+        <span class="entry-amount settle">${fmt(item.amount)} ${curLabel(item.currency)}</span>
         <button class="entry-del" data-del="settlements/${item.id}" title="Delete">🗑️</button>
       </div>`;
     }
@@ -398,12 +368,13 @@ function renderHistory() {
   });
 }
 
-function describeSplit(e) {
+// 50/50 is the norm now — only mention the split when an old entry deviates
+function splitSuffix(e) {
   const m = e.shares['Marta'], r = e.shares['Rafał'];
-  if (Math.abs(m - r) <= 0.01) return 'podział 50/50';
-  if (m === 0) return `wszystko na ${ACCUSATIVE['Rafał']}`;
-  if (r === 0) return `wszystko na ${ACCUSATIVE['Marta']}`;
-  return `Marta ${fmt(m)} / Rafał ${fmt(r)}`;
+  if (Math.abs(m - r) <= 0.01) return '';
+  if (m === 0) return ` · wszystko na ${ACCUSATIVE['Rafał']}`;
+  if (r === 0) return ` · wszystko na ${ACCUSATIVE['Marta']}`;
+  return ` · Marta ${fmt(m)} / Rafał ${fmt(r)}`;
 }
 
 function formatDate(iso) {
