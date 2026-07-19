@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only these two accounts can read or write anything.
+    // Replace with the same emails you set in firebase-config.js.
+    function isCouple() {
+      return request.auth != null &&
+        request.auth.token.email in ['rafal@example.com', 'marta@example.com'];
+    }
+    match /expenses/{id} {
+      allow read, write: if isCouple();
+    }
+    match /settlements/{id} {
+      allow read, write: if isCouple();
+    }
+  }
+}
