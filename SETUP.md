@@ -3,7 +3,7 @@
 The app is static (GitHub Pages) — Firebase provides login + shared database.
 
 ## 1. Create the Firebase project
-1. Go to https://console.firebase.google.com → **Add project** (name e.g. `mr-split`).
+1. Go to https://console.firebase.google.com → **Add project** (name e.g. `cost-splitter`).
    Analytics: off, doesn't matter.
 
 ## 2. Enable login
@@ -26,7 +26,7 @@ The app is static (GitHub Pages) — Firebase provides login + shared database.
 4. Commit + push — GitHub Pages redeploys automatically in ~1 minute.
 
 ## 5. Phones
-Open `https://lucroth.github.io/mr-split/` in Chrome on each phone → log in →
+Open `https://lucroth.github.io/cost-splitter/` in Chrome on each phone → log in →
 menu (⋮) → **Add to Home screen**. Done — you stay logged in.
 
 ## Security notes

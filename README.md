@@ -2,7 +2,7 @@
 
 Private expense-splitting app for Marta & Rafał. Track shared costs (groceries, travel, food…), see who owes whom, settle up. Installable on Android as a PWA.
 
-**Live:** https://lucroth.github.io/mr-split/
+**Live:** https://lucroth.github.io/cost-splitter/
 
 ## How it works
 - Static app hosted on **GitHub Pages** (this repo).
