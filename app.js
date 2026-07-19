@@ -42,7 +42,8 @@ let unsubscribers = [];
 
 // ---------- helpers ----------
 function parseAmount(str) {
-  const n = Number(String(str).replace(',', '.').trim());
+  // allow "1 718,50" — strip spaces (incl. non-breaking) used as thousands separators
+  const n = Number(String(str).replace(/[\s ]/g, '').replace(',', '.'));
   return Number.isFinite(n) ? n : NaN;
 }
 
