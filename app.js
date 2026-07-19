@@ -6,8 +6,7 @@ const CAT_ICONS = {
   Groceries: '🛒', Food: '🍕', Travel: '✈️', Transport: '🚌',
   Home: '🏠', Fun: '🎉', Other: '📦'
 };
-// Polish grammar helpers: dative (komu oddać), accusative (na kogo), past-tense verb by gender
-const DATIVE = { 'Rafał': 'Rafałowi', 'Marta': 'Marcie' };
+// Polish grammar helpers: accusative (na kogo), past-tense verb by gender
 const ACCUSATIVE = { 'Rafał': 'Rafała', 'Marta': 'Martę' };
 const PAID_VERB = { 'Rafał': 'Płacił', 'Marta': 'Płaciła' };
 
@@ -296,22 +295,9 @@ function renderBalance(balances) {
     const creditor = otherUser(debtor);
     const amt = Math.abs(rafal);
     return `<div class="balance-line">
-      <span class="balance-text"><b>${debtor}</b> ma oddać <b>${DATIVE[creditor]}</b> ${fmt(amt)} ${curLabel(cur)}</span>
-      <button class="small" data-settle='${JSON.stringify({ from: debtor, to: creditor, amount: amt, currency: cur })}'>Rozlicz</button>
+      <span class="balance-text"><b>${debtor}</b> → <b>${creditor}</b> (${fmt(amt).replace(',', '.')} ${curLabel(cur)})</span>
     </div>`;
   }).join('');
-  el.querySelectorAll('[data-settle]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const s = JSON.parse(btn.dataset.settle);
-      if (!confirm(`Oznaczyć zwrot ${fmt(s.amount)} ${curLabel(s.currency)} (${s.from} → ${s.to}) jako oddany?`)) return;
-      const { serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-      await addDoc(collection(db, 'settlements'), {
-        ...s,
-        date: new Date().toISOString().slice(0, 10),
-        createdAt: serverTimestamp()
-      });
-    });
-  });
 }
 
 function renderHistory() {
