@@ -277,6 +277,17 @@ function computeBalances() {
 function render() {
   renderBalance(computeBalances());
   renderHistory();
+  renderSuggestions();
+}
+
+function renderSuggestions() {
+  const counts = new Map();
+  for (const e of expenses) {
+    const name = e.desc.trim();
+    if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  const names = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'pl')).map(([n]) => n);
+  $('#desc-suggestions').replaceChildren(...names.slice(0, 15).map(n => new Option(n)));
 }
 
 function renderBalance(balances) {

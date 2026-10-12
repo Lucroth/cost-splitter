@@ -54,7 +54,8 @@
 
     <section id="tab-add" class="tab-panel hidden">
       <form id="expense-form">
-        <input id="f-desc" type="text" placeholder="Co to było? (np. Biedronka)" maxlength="200" required>
+        <input id="f-desc" type="text" placeholder="Co to było? (np. Biedronka)" maxlength="200" list="desc-suggestions" autocomplete="off" required>
+        <datalist id="desc-suggestions"></datalist>
         <input id="f-amount" type="text" inputmode="decimal" placeholder="0,00 zł" required>
         <input id="f-date" type="date">
         <button type="submit" class="primary">Dodaj wydatek</button>
