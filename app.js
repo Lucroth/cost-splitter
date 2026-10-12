@@ -135,79 +135,6 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 
-
-// ---------- receipt scanning ----------
-$('#scan-btn').addEventListener('click', () => $('#scan-file').click());
-
-$('#scan-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const status = $('#scan-status');
-  const btn = $('#scan-btn');
-  btn.disabled = true;
-  status.classList.remove('hidden');
-  try {
-    if (!window.Tesseract) {
-      status.textContent = 'Ładowanie silnika OCR… (za pierwszym razem pobiera pakiet języka polskiego)';
-      await new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-        s.onload = resolve;
-        s.onerror = () => reject(new Error('nie udało się załadować silnika OCR'));
-        document.head.appendChild(s);
-      });
-    }
-    status.textContent = 'Czytam paragon… 🔍';
-    const worker = await Tesseract.createWorker('pol');
-    const { data } = await worker.recognize(file);
-    await worker.terminate();
-    const total = parseReceiptTotal(data.text);
-    if (total) {
-      $('#f-amount').value = fmt(total);
-      if (!$('#f-desc').value) $('#f-desc').value = guessStore(data.text) || 'Zakupy';
-      status.textContent = `Znaleziona suma: ${fmt(total)} — sprawdź, czy się zgadza ✅`;
-    } else {
-      status.textContent = 'Nie udało się znaleźć sumy na paragonie — wpisz ręcznie';
-    }
-  } catch (err) {
-    status.textContent = 'Skanowanie nie powiodło się: ' + err.message;
-  } finally {
-    btn.disabled = false;
-    e.target.value = '';
-  }
-});
-
-function parseReceiptTotal(text) {
-  const amountRe = /(\d{1,6})[.,](\d{2})(?!\d)/g;
-  // 1) look for the total line (Polish + English keywords)
-  const totalRe = /(suma|razem|total|do\s*zap[łl]aty|karta|got[óo]wka)/i;
-  for (const line of text.split('\n')) {
-    if (totalRe.test(line)) {
-      const matches = [...line.matchAll(amountRe)];
-      if (matches.length) {
-        const m = matches[matches.length - 1];
-        return parseFloat(m[1] + '.' + m[2]);
-      }
-    }
-  }
-  // 2) fallback: biggest amount on the receipt
-  let max = 0;
-  for (const m of text.matchAll(amountRe)) {
-    const v = parseFloat(m[1] + '.' + m[2]);
-    if (v > max && v < 100000) max = v;
-  }
-  return max || null;
-}
-
-function guessStore(text) {
-  const known = ['Biedronka', 'Lidl', 'Żabka', 'Zabka', 'Kaufland', 'Auchan', 'Carrefour', 'Netto', 'Aldi', 'Dino', 'Rossmann', 'Stokrotka'];
-  const lower = text.toLowerCase();
-  for (const k of known) {
-    if (lower.includes(k.toLowerCase())) return k === 'Zabka' ? 'Żabka' : k;
-  }
-  return null;
-}
-
 // ---------- add expense ----------
 $('#expense-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -238,7 +165,6 @@ $('#expense-form').addEventListener('submit', async (e) => {
     });
     $('#f-desc').value = '';
     $('#f-amount').value = '';
-    $('#scan-status').classList.add('hidden');
     document.querySelector('.tab[data-tab="history"]').click();
   } catch (e2) {
     showFormError(e2.message);

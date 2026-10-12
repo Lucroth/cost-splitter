@@ -1,4 +1,4 @@
-const CACHE = 'split-app-v11';
+const CACHE = 'split-app-v12';
 const ASSETS = ['./', './index.html', './style.css', './app.js', './firebase-config.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (e) => {
@@ -15,8 +15,7 @@ self.addEventListener('activate', (e) => {
 });
 
 // network-first, cache fallback — app self-updates but still opens offline.
-// Cross-origin (Firebase, Tesseract CDN) left alone: Firestore has its own
-// offline cache, Tesseract caches its language pack.
+// Cross-origin (Firebase) left alone: Firestore has its own offline cache.
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);

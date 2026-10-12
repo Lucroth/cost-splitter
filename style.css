@@ -166,17 +166,6 @@ button.small {
   cursor: pointer;
   white-space: nowrap;
 }
-button.scan {
-  padding: 13px;
-  border: 2px dashed var(--accent);
-  border-radius: var(--radius);
-  background: none;
-  color: var(--accent);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-button.scan:disabled { opacity: 0.6; }
 
 /* ---- history ---- */
 .day-header {

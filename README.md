@@ -8,7 +8,6 @@ Private expense-splitting app for Marta & Rafał. Track shared costs (groceries,
 - Static app hosted on **GitHub Pages** (this repo).
 - **Firebase Auth** — only two accounts (Rafał, Marta) can log in.
 - **Cloud Firestore** — shared data, syncs live between both phones, works offline and syncs when back online.
-- **Receipt scanning** — 📷 button uses the phone camera + on-device OCR (Tesseract.js, Polish language) to read the receipt total (SUMA/RAZEM…) and prefill the amount. Photos never leave the phone.
 
 ## Features
 - Expenses: description, amount (comma or dot), currency (PLN/EUR/USD/GBP/CZK/HUF), category, date
