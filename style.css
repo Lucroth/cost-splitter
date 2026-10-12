@@ -11,7 +11,7 @@
   --radius: 14px;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; text-transform: lowercase; }
 
 body {
   margin: 0;
@@ -172,7 +172,6 @@ button.small {
   font-size: 0.8rem;
   color: var(--muted);
   margin: 16px 4px 6px;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 .entry {
